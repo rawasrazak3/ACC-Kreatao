@@ -230,3 +230,18 @@ app_license = "mit"
 doctype_js = {
     "Sales Invoice": "public/js/sales_vo.js"
     }
+
+fixtures=[
+    {
+    	"doctype": "Custom Field",
+        "filters": [
+            [
+                "name",
+                "in",
+                [ 
+                    "Sales Invoice-custom_item_prices"
+                 ]
+            ]
+        ]
+    }
+]
