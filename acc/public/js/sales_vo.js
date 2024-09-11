@@ -10,37 +10,47 @@ frappe.ui.form.on('Sales Invoice Item', {
         var child = locals[cdt][cdn];
         var item_code = child.item_code;
 
-        console.log('Selected Item Code:', item_code);
+        frm.clear_table('custom_item_prices');
 
+        // Fetch the prices and valuation rate
         frappe.call({
             method: 'acc.acc_kreatao.custom_script.sales_invoice.purchase_invoice_prices',
             args: {
                 item_code: item_code
             },
             callback: function(r) {
-                console.log('Response from Server:', r.message);
-
                 if (r.message) {
-                    if (!frm.doc.custom_item_prices) {
-                        frm.set_value('custom_item_prices', []);
-                    }
+                    console.log("Response from Server:", r.message);
 
-                    var child_row = frm.add_child('custom_item_prices');
+                    // Add a new row in custom_item_prices
+                    var new_row = frm.add_child('custom_item_prices', { item_code: item_code });
 
                     var buying_price_1 = r.message.buying_price_1 || 0;
                     var buying_price_2 = r.message.buying_price_2 || 0;
                     var buying_price_3 = r.message.buying_price_3 || 0;
 
-                    console.log('Setting Prices:', buying_price_1, buying_price_2, buying_price_3);
+                    frappe.model.set_value(new_row.doctype, new_row.name, 'buying_price_1', buying_price_1);
+                    frappe.model.set_value(new_row.doctype, new_row.name, 'buying_price_2', buying_price_2);
+                    frappe.model.set_value(new_row.doctype, new_row.name, 'buying_price_3', buying_price_3);
 
-                    frappe.model.set_value(child_row.doctype, child_row.name, 'buying_price_1', buying_price_1);
-                    frappe.model.set_value(child_row.doctype, child_row.name, 'buying_price_2', buying_price_2);
-                    frappe.model.set_value(child_row.doctype, child_row.name, 'buying_price_3', buying_price_3);
+                    // Fetch and set the valuation rate
+                    frappe.call({
+                        method: 'acc.acc_kreatao.custom_script.sales_invoice.valuation_rate',
+                        args: {
+                            item_code: item_code
+                        },
+                        callback: function(r) {
+                            var valuation_rate = r.message || 0;
+                            console.log("Valuation Rate:", valuation_rate);
 
-                    frm.refresh_field('custom_item_prices');
+                            frappe.model.set_value(new_row.doctype, new_row.name, 'valuation_rate', valuation_rate);
+                            frm.refresh_field('custom_item_prices');
+                        }
+                    });
+
+                    console.log("Setting Prices:", buying_price_1, buying_price_2, buying_price_3);
                 }
             }
         });
     }
 });
-

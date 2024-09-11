@@ -16,3 +16,19 @@ def purchase_invoice_prices(item_code):
         results[f'buying_price_{i+1}'] = invoice_item.rate
 
     return results
+
+@frappe.whitelist()
+def valuation_rate(item_code):
+    results = None
+    entries = frappe.get_all(
+        'Stock Ledger Entry',
+        filters={'item_code': item_code, 'is_cancelled': 0},
+        fields=['valuation_rate'],
+        order_by='posting_date DESC, posting_time DESC, creation DESC',
+        limit=1
+    )
+
+    if entries:
+        results = entries[0].get('valuation_rate')
+
+    return results
