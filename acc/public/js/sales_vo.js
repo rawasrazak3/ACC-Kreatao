@@ -12,7 +12,6 @@ frappe.ui.form.on('Sales Invoice Item', {
 
         frm.clear_table('custom_item_prices');
 
-        // Fetch the prices and valuation rate
         frappe.call({
             method: 'acc.acc_kreatao.custom_script.sales_invoice.purchase_invoice_prices',
             args: {
@@ -22,7 +21,6 @@ frappe.ui.form.on('Sales Invoice Item', {
                 if (r.message) {
                     console.log("Response from Server:", r.message);
 
-                    // Add a new row in custom_item_prices
                     var new_row = frm.add_child('custom_item_prices', { item_code: item_code });
 
                     var buying_price_1 = r.message.buying_price_1 || 0;
@@ -33,7 +31,6 @@ frappe.ui.form.on('Sales Invoice Item', {
                     frappe.model.set_value(new_row.doctype, new_row.name, 'buying_price_2', buying_price_2);
                     frappe.model.set_value(new_row.doctype, new_row.name, 'buying_price_3', buying_price_3);
 
-                    // Fetch and set the valuation rate
                     frappe.call({
                         method: 'acc.acc_kreatao.custom_script.sales_invoice.valuation_rate',
                         args: {
@@ -49,6 +46,26 @@ frappe.ui.form.on('Sales Invoice Item', {
                     });
 
                     console.log("Setting Prices:", buying_price_1, buying_price_2, buying_price_3);
+                }
+            }
+        });
+    }
+});
+
+frappe.ui.form.on('Sales Invoice Item', {
+    item_code: function (frm, cdt, cdn) {
+        var child = locals[cdt][cdn];
+        var item_code = child.item_code;
+
+        frappe.call({
+            method: 'acc.acc_kreatao.custom_script.sales_invoice.valuation_rate', 
+            args: {
+                item_code: item_code
+            },
+            callback: function (r) {
+                if (r.message) {
+                    frappe.model.set_value(cdt, cdn, 'custom_valuation_rate', r.message);
+                    frm.refresh_field('items');
                 }
             }
         });

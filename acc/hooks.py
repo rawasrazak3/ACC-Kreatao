@@ -240,7 +240,8 @@ fixtures=[
                 "in",
                 [ 
                     "Sales Invoice-custom_item_prices",
-                    "Sales Invoice-custom_section_break_3bsxy"
+                    "Sales Invoice-custom_section_break_3bsxy",
+                    "Sales Invoice Item-custom_valuation_rate"
                  ]
             ]
         ]
