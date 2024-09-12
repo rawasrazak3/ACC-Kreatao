@@ -71,3 +71,23 @@ frappe.ui.form.on('Sales Invoice Item', {
         });
     }
 });
+
+frappe.ui.form.on('Sales Invoice', {
+    validate: function(frm) {
+        let is_undercost = false;
+        let is_negative_stock = false;
+
+        frm.doc.items.forEach(function(item) {
+            if (item.rate < item.custom_valuation_rate) {
+                is_undercost = true;
+            }
+
+            if (item.qty > item.actual_qty) {
+                is_negative_stock = true;
+            }
+        });
+
+        frm.set_value('custom_is_undercost', is_undercost ? 1 : 0);
+        frm.set_value('custom_is_negative_stock', is_negative_stock ? 1 : 0);
+    }
+});

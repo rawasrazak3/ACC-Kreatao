@@ -241,7 +241,9 @@ fixtures=[
                 [ 
                     "Sales Invoice-custom_item_prices",
                     "Sales Invoice-custom_section_break_3bsxy",
-                    "Sales Invoice Item-custom_valuation_rate"
+                    "Sales Invoice Item-custom_valuation_rate",
+                    "Sales Invoice-custom_is_undercost",
+                    "Sales Invoice-custom_is_negative_stock"
                  ]
             ]
         ]
